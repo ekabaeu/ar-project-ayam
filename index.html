@@ -2,10 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Proyek AR Humanoid Sederhana (Debugging & Kompatibilitas)</title>
-    <!-- PERBAIKAN KRITIS: Menurunkan versi A-Frame ke 1.0.4 untuk kompatibilitas dengan AR.js -->
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <!-- Memuat A-Frame AR.js dari Githack (Versi stabil) -->
+    <title>Proyek AR Humanoid Sederhana (Dengan Aset)</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Memuat A-Frame AR.js untuk fungsionalitas Augmented Reality -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
         /* Mengatur agar halaman mengambil seluruh viewport */
@@ -27,64 +26,39 @@
     </style>
 </head>
 <body>
-    <!-- Pesan status untuk pengguna -->
-    <div id="status-message" class="message-box">
-        Silakan tunjukkan penanda 'hiro' ke kamera Anda.
+    <div class="message-box">
+        Silakan tunjukkan penanda 'hiro' ke kamera Anda. Karakter akan muncul dan berdiri tetap di atas penanda.
     </div>
-
-    <!-- 
-        Komponen A-Frame untuk Logging (Debugging)
-    -->
-    <script>
-        AFRAME.registerComponent('marker-debug', {
-            init: function () {
-                // Event saat marker 'hiro' terlihat oleh kamera
-                this.el.addEventListener('markerFound', () => {
-                    console.log('Marker Ditemukan (Marker Found)! AR.js berfungsi dengan baik.');
-                    document.querySelector('#status-message').textContent = 'Marker Ditemukan! Sedang memuat model...';
-                });
-                // Event saat marker 'hiro' hilang dari pandangan
-                this.el.addEventListener('markerLost', () => {
-                    console.log('Marker Hilang (Marker Lost).');
-                    document.querySelector('#status-message').textContent = 'Marker Hilang. Arahkan kembali ke penanda.';
-                });
-            }
-        });
-
-        // Komponen untuk melacak apakah aset dimuat atau gagal
-        AFRAME.registerComponent('model-load-status', {
-            init: function () {
-                this.el.addEventListener('model-loaded', () => {
-                    console.log('Model Chicken.glb berhasil dimuat!');
-                    document.querySelector('#status-message').textContent = 'Karakter (Ayam) berhasil dimuat!';
-                });
-                // Menambahkan penanganan error yang lebih eksplisit
-                this.el.addEventListener('model-error', (evt) => {
-                    console.error('MODEL GAGAL DIMUAT! Periksa URL, masalah CORS, atau jalur file ("./Chicken.glb").', evt);
-                    document.querySelector('#status-message').textContent = 'Gagal memuat model. Cek konsol browser!';
-                });
-            }
-        });
-    </script>
 
     <a-scene embedded arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'>
 
+        <!-- 
+            BLOK ASSET (Disarankan): 
+            Semua aset (model, tekstur) harus didefinisikan di sini. 
+            Ini membantu memastikan aset dimuat sebelum digunakan dan mempermudah debugging.
+        -->
         <a-assets>
             <!-- 
-                KOREKSI JALUR: Menggunakan jalur relatif "./Chicken.glb" sesuai konfirmasi Anda. 
+                GANTI URL INI:
+                Pastikan URL Anda adalah tautan lengkap, dimulai dengan https:// atau http://
+                Jika URL Anda sebelumnya benar: https://ekabayu.met.student.pens.ac.id/Chicken.glb
+                
+                Contoh saat ini menggunakan model Humanoid yang diketahui berfungsi:
             -->
             <a-asset-item 
                 id="humanoid-model" 
-                src="./Chicken.glb" 
+                src="https://cdn.glitch.com/063e80d8-048d-4299-b13c-74a919420b9e%2Fbot.glb?v=1599874492661"
                 crossorigin="anonymous">
             </a-asset-item>
         </a-assets>
 
-        <!-- Tambahkan komponen marker-debug untuk pelacakan -->
-        <a-marker preset="hiro" marker-debug>
+        <!-- 
+            Marker (Penanda 'hiro'): 
+        -->
+        <a-marker preset="hiro">
             <!-- 
-                Karakter Ayam (Chicken.glb)
-                Tambahkan komponen model-load-status untuk debugging pemuatan.
+                Karakter Humanoid (Model GLB)
+                Kita sekarang mereferensikan aset menggunakan ID: gltf-model="#humanoid-model"
             -->
             <a-entity
                 id="humanoid-character"
@@ -92,8 +66,7 @@
                 position="0 0 0" 
                 rotation="0 0 0"
                 scale="0.5 0.5 0.5"
-                animation-mixer
-                model-load-status>
+                animation-mixer>
             </a-entity>
 
             <!-- Menambahkan bayangan kecil -->
